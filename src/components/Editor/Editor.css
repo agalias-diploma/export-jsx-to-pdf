@@ -1,0 +1,20 @@
+.wrapper-class {
+    padding: 1rem;
+}
+
+.editor-class {
+    background-color:#f3f3f3;
+    padding: 1rem;
+    border: 1px solid #e0e0e0;
+}
+
+.toolbar-class {
+    border: 1px solid #e0e0e0;
+}
+
+.preview {
+    padding: 1rem;
+    margin: 0 1rem 0 1rem;
+    background-color:#d9e7f8;
+    border: 1px solid #beddff;
+}
