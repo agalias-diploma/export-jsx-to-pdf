@@ -13,8 +13,7 @@ React-PDF
 No, this isn’t a duplicate. Confusingly, it has a similar name, but it a completely different library. 
 React-PDF is a library to display PDFs on the web as an svg or canvas. 
 As a tip, this library doesn't have a "@" in the name.
-
--------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------
 Ofc, files should be saved in .jsx format
 
 Just testing for know all the stuff
@@ -24,3 +23,8 @@ draft-convert library
 An easy way to ensure that HTML is properly structured is by using the dompurify library.
 
 test private repo
+
+-------------------------------------------------------------------------------------------------------
+React Component
+Rendering, re-render
+https://storybook.js.org/docs/get-started

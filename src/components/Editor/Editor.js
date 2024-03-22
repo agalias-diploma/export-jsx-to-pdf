@@ -3,8 +3,8 @@ import { Editor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw } from "draft-js"; // controlled editor
 import { convertToHTML } from 'draft-convert';
 import DOMPurify from 'dompurify';
-
 import { PDFViewer } from '@react-pdf/renderer';
+
 import FileToSave from '../FileToSave';
 import ToggleButton from "../ToggleButton";
 
