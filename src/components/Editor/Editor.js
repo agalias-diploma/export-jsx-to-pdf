@@ -6,7 +6,7 @@ import DOMPurify from 'dompurify';
 import { PDFViewer } from '@react-pdf/renderer';
 
 import FileToSave from '../FileToSave';
-import ToggleButton from "../ToggleButton";
+import ToggleButton from "../ToggleButton/ToggleButton";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./Editor.css";

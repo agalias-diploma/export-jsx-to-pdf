@@ -1,8 +1,8 @@
-import '../App.css';
+import './Header.css';
 
 const Header = () => {
     return (
-        <header className="App-header">
+        <header className="app-header">
             Export formatted text to PDF
         </header>
     )
