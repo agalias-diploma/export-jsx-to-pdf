@@ -13,6 +13,10 @@ React-PDF
 No, this isn’t a duplicate. Confusingly, it has a similar name, but it a completely different library. 
 React-PDF is a library to display PDFs on the web as an svg or canvas. 
 As a tip, this library doesn't have a "@" in the name.
+
+usePDF Web only
+React-pdf now ships a hook called usePDF that enables accessing all PDF creation capabilities via a React hook API. 
+This is great if you need more control over how the document gets rendered or how often it's updated.
 -------------------------------------------------------------------------------------------------------
 Ofc, files should be saved in .jsx format
 
@@ -28,3 +32,19 @@ test private repo
 React Component
 Rendering, re-render
 https://storybook.js.org/docs/get-started
+
+
+
+
+<Document>
+          <Page style={styles.body}>
+            {convertedContent && (
+              <Text style={styles.text}>{convertedContent}</Text>
+            )}
+          </Page>
+        </Document>
+
+
+        <PDFViewer style={{ width: "100%", height: "100vh" }}>
+          <FileToSave convertedContent={createMarkup(convertedContent)} />
+        </PDFViewer>
