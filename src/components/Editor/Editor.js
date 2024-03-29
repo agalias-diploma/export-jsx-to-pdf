@@ -3,6 +3,7 @@ import { Editor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
 import { convertToHTML } from "draft-convert";
 import DOMPurify from "dompurify";
+import Html from 'react-pdf-html';
 import {
   PDFViewer,
   Font,
@@ -10,6 +11,7 @@ import {
   Text,
   Document,
   StyleSheet,
+  View,
 } from "@react-pdf/renderer";
 import ToggleButton from "../Button/Button";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
@@ -23,20 +25,39 @@ Font.register({
   src: MyCustomFont,
 });
 
+const html = `                <div aria-label="rdw-editor" class="notranslate public-DraftEditor-content" contenteditable="true" role="textbox" spellcheck="false" style="outline: none; user-select: text; white-space: pre-wrap; overflow-wrap: break-word;"><div data-contents="true"><div class="" data-block="true" data-editor="3gnam" data-offset-key="dfss3-0-0"><div data-offset-key="dfss3-0-0" class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span data-offset-key="dfss3-0-0" style="text-decoration: underline line-through; font-size: 11px; position: relative; top: -8px; display: inline-flex;"><span data-text="true">ab</span></span><span data-offset-key="dfss3-0-1" style="font-style: italic; font-weight: bold;"><span data-text="true">cde   </span></span></div></div><div class="" data-block="true" data-editor="3gnam" data-offset-key="ah152-0-0"><div data-offset-key="ah152-0-0" class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span data-offset-key="ah152-0-0" style="font-weight: bold; text-decoration: underline line-through;"><span data-text="true">atqt  r4wy</span></span><span data-offset-key="ah152-0-1" style="text-decoration: line-through; font-style: italic;"><span data-text="true">  eqwtqt</span></span></div></div></div></div>`;
+
 // Should be moved out of here
+// const styles = StyleSheet.create({
+//   body: {
+//     paddingTop: 35,
+//     paddingBottom: 65,
+//     paddingHorizontal: 35,
+//   },
+//   text: {
+//     fontSize: 14,
+//     textAlign: "justify",
+//     fontFamily: "AntonFamily",
+//   },
+//   bold: {
+//     fontWeight: "bold",
+//   },
+//   italic: {
+//     fontStyle: "italic",
+//   },
+// });
+
+// font-weight !
+
 const styles = StyleSheet.create({
-  body: {
-    paddingTop: 35,
-    paddingBottom: 65,
-    paddingHorizontal: 35,
+  page: {
+    flexDirection: 'row',
+    backgroundColor: '#E4E4E4',
   },
-  text: {
-    fontSize: 14,
-    textAlign: "justify",
-    fontFamily: "AntonFamily",
-  },
-  bold: {
-    fontWeight: "bold",
+  section: {
+    margin: 10,
+    padding: 10,
+    flexGrow: 1,
   },
   italic: {
     fontStyle: "italic",
@@ -59,6 +80,10 @@ const ReactDraftEditor = () => {
   useEffect(() => {
     // Just convert thing to JSON
     let rawContent = convertToRaw(editorState.getCurrentContent());
+    
+    console.log(editorState.getCurrentContent());
+    console.log(convertToRaw(editorState.getCurrentContent()))
+    
     let json = convertFromRaw(rawContent);
     setConvertedContentToJSON(json);
 
@@ -77,6 +102,19 @@ const ReactDraftEditor = () => {
     // Map over each character in string
     const blocks = keys.map((key) => obj.blockMap[key]);
     setJsonBlocks(blocks);
+
+  // if (jsonBlocks !== null) {
+  //   jsonBlocks.forEach(block => {
+  //     // Splitting the text of the block into characters
+  //     const characters = block.text.split("");
+      
+  //     characters.forEach((char, charIndex) => {
+  //       // Getting the character's styles
+  //       const charStyles = block.characterList[charIndex].style;
+        
+  //       console.log(`Character: ${char}, Styles: ${charStyles.join(", ")}`);
+  //     });
+  //   });  }
   }, [editorState]);
 
   // It ensures that HTML is properly rendered in <div> block on a page
@@ -121,21 +159,35 @@ const ReactDraftEditor = () => {
       {isViewerVisible &&
         convertedContentToJSON && ( // Conditional rendering
           <PDFViewer style={{ width: "100%", height: "100vh" }}>
+
             <Document>
-              <Page>
-                {jsonKeys.map((key, keyIndex) => (
-                  <Text key={keyIndex} style={styles.text}>
-                    {jsonBlocks[keyIndex].text
-                      .split("")
-                      .map((char, charIndex) => (
-                        <Text key={charIndex}>
-                          {char === " " ? "\u00A0" : char}
-                        </Text>
-                      ))}
-                  </Text>
-                ))}
+    <Page>
+      <Html>{html}</Html>
+    </Page>
+  </Document>
+            {/* <Document>
+              <Page >
+                
+                {jsonKeys.map((key, keyIndex) => {
+                  const block = jsonBlocks[keyIndex];
+                  return (
+                    <Text key={keyIndex} style={styles.text}>
+                      {block.text.split("").map((char, charIndex) => {
+                        // Get styles for the current character
+                        const charStyle = block.characterList[charIndex].style;
+                        // Merge the character's styles with the base text style
+                        const mergedStyles = { ...styles.text, ...charStyle };
+                        return (
+                          <Text key={charIndex} style={mergedStyles}>
+                            {char === " " ? "\u00A0" : char}
+                          </Text>
+                        );
+                      })}
+                    </Text>
+                  );
+                })}
               </Page>
-            </Document>
+            </Document> */}
           </PDFViewer>
         )}
     </div>
