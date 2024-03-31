@@ -18,6 +18,7 @@ const options = {
     qualityRatio: 1,
   },
   page: {
+    format: 'A4',
     margin: {
       top: 10,
       bottom: 10,
@@ -65,14 +66,14 @@ const ReactDraftEditor = () => {
 
   const DownloadPDF = () => {
     const containerStyles = {
-      padding: '20px', // Example padding values
+      padding: '40px', // Example padding values
       // Add more styles as needed
     }; 
 
     const targetRef = useRef();
     return (
       <div>
-        <button onClick={() => generatePDF(targetRef, {filename: 'page.pdf'}, options)}>Download PDF</button>
+        <button onClick={() => generatePDF(targetRef, {filename: 'page.pdf'})}>Download PDF</button>
         <div style={containerStyles} ref={targetRef} dangerouslySetInnerHTML={createMarkup(convertedContentToHTML)} />
       </div>
     )
@@ -87,16 +88,13 @@ const ReactDraftEditor = () => {
         wrapperClassName="wrapper-class"
         editorClassName="editor-class"
         toolbar={{
-          options: ['inline', 'blockType', 'fontSize'],
-          inline: {
-            options: ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript'],
-          },
+          options: ['inline', 'blockType', 'fontSize', 'fontFamily', 'list', 'textAlign', 'colorPicker', 'emoji', 'image', 'remove', 'history'],
           blockType: {
             inDropdown: true,
             options: ['Normal', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'Blockquote'],
           },
           fontSize: {
-            options: [8, 10, 12, 14, 18, 24, 30],
+            options: [8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30],
           },
         }}
       />
