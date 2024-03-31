@@ -1,5 +1,4 @@
 /---------------- Delete later ---------------------/
-
 React PDF
 React PDF is a PDF renderer built for React. 
 It includes several components that represent different aspects of a PDF document such as a Document, Page, and View. 
@@ -20,31 +19,18 @@ This is great if you need more control over how the document gets rendered or ho
 -------------------------------------------------------------------------------------------------------
 Ofc, files should be saved in .jsx format
 
-Just testing for know all the stuff
-
 draft-convert library
 
 An easy way to ensure that HTML is properly structured is by using the dompurify library.
 
 test private repo
-
 -------------------------------------------------------------------------------------------------------
 React Component
 Rendering, re-render
 https://storybook.js.org/docs/get-started
 
+-------------------------------------------------------------------------------------------------------
+Field for entering file name
 
-
-
-<Document>
-          <Page style={styles.body}>
-            {convertedContent && (
-              <Text style={styles.text}>{convertedContent}</Text>
-            )}
-          </Page>
-        </Document>
-
-
-        <PDFViewer style={{ width: "100%", height: "100vh" }}>
-          <FileToSave convertedContent={createMarkup(convertedContent)} />
-        </PDFViewer>
+Currently, text in the PDF is too small in comparsion with MS Word 
+Skipping whitespaces (it doesn't parse multiple whitespaces for now)

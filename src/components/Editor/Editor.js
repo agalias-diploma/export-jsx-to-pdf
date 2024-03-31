@@ -66,8 +66,8 @@ const ReactDraftEditor = () => {
 
   const DownloadPDF = () => {
     const containerStyles = {
-      padding: '40px', // Example padding values
-      // Add more styles as needed
+      padding: '40px', 
+      whiteSpace: 'pre-wrap',
     }; 
 
     const targetRef = useRef();
