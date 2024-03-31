@@ -42,18 +42,29 @@ const ReactDraftEditor = () => {
   );
   const [convertedContentToHTML, setConvertedContentToHTML] = useState(null);
   const [isViewerVisible, setIsViewerVisible] = useState(false);
+  const [filename, setFilename] = useState('document.pdf');
 
   useEffect(() => {
-    // Convert editorState into HTML in order to print data on page
-    let html = draftToHtml(convertToRaw(editorState.getCurrentContent()));
-    setConvertedContentToHTML(html);
+    // proceed when state is not null
+    if (editorState) {
+      // Convert editorState into HTML in order to print data on page
+      let html = draftToHtml(convertToRaw(editorState.getCurrentContent()));
+      setConvertedContentToHTML(html);
+    }
   }, [editorState]);
 
   // It ensures that HTML is properly rendered in <div> block on a page
   function createMarkup(html) {
+    if (!html) {
+      return { __html: "" };
+    }
+    let styledHtml = html;
+
+    styledHtml = styledHtml.replace(/(<p><\/p>\s*){2,}/g, match => match.replace(/<p><\/p>/g, '<p style="white-space: pre-wrap; font-family: Times New Roman, serif; font-size: 16pt;"><br></p>'));
     // Replace each white space character with the HTML entity for a non-breaking space
+    styledHtml = html.replace(/<p>/g, '<p style="white-space: pre-wrap; font-family: Times New Roman, serif; font-size: 16pt;">')
     return {
-      __html: DOMPurify.sanitize(html),
+      __html: DOMPurify.sanitize(styledHtml),
     };
   }
 
@@ -65,15 +76,20 @@ const ReactDraftEditor = () => {
   };
 
   const DownloadPDF = () => {
+    // Try default CSS styles and call via className
     const containerStyles = {
       padding: '40px', 
       whiteSpace: 'pre-wrap',
+      fontFamily: "'Times New Roman', serif",
+      fontSize: '16pt',
     }; 
 
     const targetRef = useRef();
+
     return (
       <div>
-        <button onClick={() => generatePDF(targetRef, {filename: 'page.pdf'})}>Download PDF</button>
+        <button onClick={() => generatePDF(targetRef.current, { filename })}>Download PDF</button>
+        <input type="text" placeholder="Enter file name" value={filename} onChange={(e) => setFilename(e.target.value)}></input>
         <div style={containerStyles} ref={targetRef} dangerouslySetInnerHTML={createMarkup(convertedContentToHTML)} />
       </div>
     )
