@@ -9,4 +9,15 @@ const Button = ({ onClick, isViewerVisible }) => {
   )
 }
 
-export default Button
+const ButtonComponent = ({ onClick, children }) => {
+  return (
+    <button onClick={onClick}>
+      {children}
+    </button>
+  );
+};
+
+module.exports = {
+  Button,
+  ButtonComponent,
+}
