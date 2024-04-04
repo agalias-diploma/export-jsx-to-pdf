@@ -1,47 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { Editor, fontSize } from "react-draft-wysiwyg";
+import { Editor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import DOMPurify from "dompurify";
 import { useRef } from "react";
-import generatePDF, { Resolution, Margin } from "react-to-pdf";
+import generatePDF, { Resolution } from "react-to-pdf";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import "../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./Editor.css";
+import InputFileName from "../InputFileName/InputFileName";
+import { Button, ButtonComponent } from "../Button/Button";
 
+// Maybe it will helpful in future
 const options = {
   method: "open",
   resolution: Resolution.HIGH,
-  canvas: {
-    mimeType: "image/png",
-    qualityRatio: 1,
-  },
-  page: {
-    format: "A4",
-    margin: {
-      top: 10,
-      bottom: 10,
-      left: 20,
-      right: 20,
-    },
-  },
-  overrides: {
-    pdf: {
-      compress: true,
-    },
-    canvas: {
-      useCORS: true,
-    },
-  },
 };
 
 const ReactDraftEditor = () => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
-  const [convertedContentToHTML, setConvertedContentToHTML] = useState(null);
-  const [isViewerVisible, setIsViewerVisible] = useState(false);
+  const [convertedContentToHTML, setConvertedContentToHTML] = useState("");
   const [filename, setFilename] = useState("document.pdf");
 
   useEffect(() => {
@@ -49,76 +29,51 @@ const ReactDraftEditor = () => {
     if (editorState) {
       // Convert editorState into HTML in order to print data on page
       let html = draftToHtml(convertToRaw(editorState.getCurrentContent()));
-      setConvertedContentToHTML(html);
+      html = sanitizeHtml(html);
+
+      let styledHtml = html;
+      styledHtml = styledHtml.replace(/(<p><\/p>\s*){2,}/g, (match) =>
+        match.replace(
+          /<p><\/p>/g,
+          '<p style="white-space: pre-wrap; font-family: Times New Roman, serif; font-size: 16pt;"></p>'
+        )
+      );
+      // Replace each white space character with the HTML entity for a non-breaking space
+      styledHtml = html.replace(
+        /<p>/g,
+        '<p style="white-space: pre-wrap; overflow-wrap: break-word; font-family: Times New Roman, serif; font-size: 16pt;">'
+      );
+
+      setConvertedContentToHTML(styledHtml);
     }
   }, [editorState]);
 
-  // It ensures that HTML is properly rendered in <div> block on a page
-  function createMarkup(html) {
-    if (!html) {
-      return { __html: "" };
-    }
-    let styledHtml = html;
+  const targetRef = useRef();
 
-    styledHtml = styledHtml.replace(/(<p><\/p>\s*){2,}/g, (match) =>
-      match.replace(
-        /<p><\/p>/g,
-        '<p style="white-space: pre-wrap; font-family: Times New Roman, serif; font-size: 16pt;"><br></p>'
-      )
-    );
-    // Replace each white space character with the HTML entity for a non-breaking space
-    styledHtml = html.replace(
-      /<p>/g,
-      '<p style="white-space: pre-wrap; font-family: Times New Roman, serif; font-size: 16pt;">'
-    );
-    return {
-      __html: DOMPurify.sanitize(styledHtml),
-    };
-  }
-
-  console.log(createMarkup(convertedContentToHTML));
-
-  // Guess it should be moved out of here too
-  const toggleViewerVisibility = () => {
-    setIsViewerVisible(!isViewerVisible);
+  const sanitizeHtml = (html) => {
+    return DOMPurify.sanitize(html);
   };
 
-  const DownloadPDF = () => {
-    // Try default CSS styles and call via className
-    const containerStyles = {
-      padding: "40px",
-      whiteSpace: "pre-wrap",
-      fontFamily: "'Times New Roman', serif",
-      fontSize: "16pt",
-    };
+  const handleEditorStateChange = (newState) => {
+    // Compare the current editor state with the new state
+    if (editorState !== newState) {
+      setEditorState(newState);
+    }
+  };
 
-    const targetRef = useRef();
+  const handleDownloadPDF = () => {
+    generatePDF(targetRef, { filename: "document.pdf" });
+  };
 
-    return (
-      <div>
-        <button onClick={() => generatePDF(targetRef.current, { filename })}>
-          Download PDF
-        </button>
-        <input
-          type="text"
-          placeholder="Enter file name"
-          value={filename}
-          onChange={(e) => setFilename(e.target.value)}
-        ></input>
-        <div
-          style={containerStyles}
-          ref={targetRef}
-          dangerouslySetInnerHTML={createMarkup(convertedContentToHTML)}
-        />
-      </div>
-    );
+  const handleFilenameChange = (e) => {
+    setFilename(e.target.value);
   };
 
   return (
     <div>
       <Editor
         editorState={editorState}
-        onEditorStateChange={setEditorState}
+        onEditorStateChange={handleEditorStateChange}
         toolbarClassName="toolbar-class"
         wrapperClassName="wrapper-class"
         editorClassName="editor-class"
@@ -154,12 +109,29 @@ const ReactDraftEditor = () => {
           },
         }}
       />
+      {/* PREVIEW COMPONENT */}
       <h4>Preview text:</h4>
       <div
         className="preview"
-        dangerouslySetInnerHTML={createMarkup(convertedContentToHTML)}
+        ref={targetRef}
+        dangerouslySetInnerHTML={{ __html: convertedContentToHTML }}
       ></div>
-      <DownloadPDF />
+      <div>
+        {/* BUTTON COMPONENT */}
+        <button onClick={handleDownloadPDF}>Download PDF</button>
+        {/* INPUT COMPONENT Doesn't works properly*/}
+        <InputFileName
+          value={filename}
+          placeholder="Enter file name"
+          onChange={handleFilenameChange}
+        />
+        {/* <input
+          type="text"
+          placeholder="Enter file name"
+          value={filename}
+          onChange={handleFilenameChange}
+        /> */}
+      </div>
     </div>
   );
 };
