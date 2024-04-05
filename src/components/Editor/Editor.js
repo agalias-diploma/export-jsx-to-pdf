@@ -9,7 +9,7 @@ import generatePDF, { Resolution } from "react-to-pdf";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./Editor.css";
 import InputFileName from "../InputFileName/InputFileName";
-import { Button, ButtonComponent } from "../Button/Button";
+// import { Button, ButtonComponent } from "../Button/Button";
 
 // Maybe it will helpful in future
 const options = {
