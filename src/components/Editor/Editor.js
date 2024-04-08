@@ -6,10 +6,11 @@ import DOMPurify from "dompurify";
 import { useRef } from "react";
 import generatePDF, { Resolution } from "react-to-pdf";
 
+import ButtonComponent from "../Button/Button";
+import InputFileName from "../Input/InputFileName";
+
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./Editor.css";
-import InputFileName from "../InputFileName/InputFileName";
-// import { Button, ButtonComponent } from "../Button/Button";
 
 // Maybe it will helpful in future
 const options = {
@@ -22,7 +23,7 @@ const ReactDraftEditor = () => {
     EditorState.createEmpty()
   );
   const [convertedContentToHTML, setConvertedContentToHTML] = useState("");
-  const [filename, setFilename] = useState("document.pdf");
+  const [filename, setFilename] = useState("document");
 
   useEffect(() => {
     // proceed when state is not null
@@ -62,11 +63,14 @@ const ReactDraftEditor = () => {
   };
 
   const handleDownloadPDF = () => {
-    generatePDF(targetRef, { filename: "document.pdf" });
+    const filenameWithExtension = filename.endsWith(".pdf")
+      ? filename
+      : filename + ".pdf";
+    generatePDF(targetRef, { filename: filenameWithExtension });
   };
 
-  const handleFilenameChange = (e) => {
-    setFilename(e.target.value);
+  const handleFilenameChange = (newFilename) => {
+    setFilename(newFilename);
   };
 
   return (
@@ -117,20 +121,11 @@ const ReactDraftEditor = () => {
         dangerouslySetInnerHTML={{ __html: convertedContentToHTML }}
       ></div>
       <div>
-        {/* BUTTON COMPONENT */}
-        <button onClick={handleDownloadPDF}>Download PDF</button>
-        {/* INPUT COMPONENT Doesn't works properly*/}
+        <ButtonComponent onClick={handleDownloadPDF} text="Download PDF" />
         <InputFileName
-          value={filename}
-          placeholder="Enter file name"
-          onChange={handleFilenameChange}
+          filename={filename}
+          onFilenameChange={handleFilenameChange}
         />
-        {/* <input
-          type="text"
-          placeholder="Enter file name"
-          value={filename}
-          onChange={handleFilenameChange}
-        /> */}
       </div>
     </div>
   );
