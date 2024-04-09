@@ -1,22 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import DOMPurify from "dompurify";
-import { useRef } from "react";
-import generatePDF, { Resolution } from "react-to-pdf";
+import generatePDF, { Resolution, Margin } from "react-to-pdf";
 
 import ButtonComponent from "../Button/Button";
 import InputFileName from "../Input/InputFileName";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./Editor.css";
-
-// Maybe it will helpful in future
-const options = {
-  method: "open",
-  resolution: Resolution.HIGH,
-};
 
 const ReactDraftEditor = () => {
   const [editorState, setEditorState] = useState(() =>
@@ -32,20 +25,20 @@ const ReactDraftEditor = () => {
       let html = draftToHtml(convertToRaw(editorState.getCurrentContent()));
       html = sanitizeHtml(html);
 
-      let styledHtml = html;
-      styledHtml = styledHtml.replace(/(<p><\/p>\s*){2,}/g, (match) =>
-        match.replace(
-          /<p><\/p>/g,
-          '<p style="white-space: pre-wrap; font-family: Times New Roman, serif; font-size: 16pt;"></p>'
-        )
-      );
+      // let styledHtml = html;
+      // styledHtml = styledHtml.replace(/(<p><\/p>\s*){2,}/g, (match) =>
+      //   match.replace(
+      //     /<p><\/p>/g,
+      //     '<p style=""></p>'
+      //   )
+      // );
       // Replace each white space character with the HTML entity for a non-breaking space
-      styledHtml = html.replace(
-        /<p>/g,
-        '<p style="white-space: pre-wrap; overflow-wrap: break-word; font-family: Times New Roman, serif; font-size: 16pt;">'
-      );
+      // styledHtml = html.replace(
+      //   /<p>/g,
+      //   '<p style="overflow-wrap: break-word;">'
+      // );
 
-      setConvertedContentToHTML(styledHtml);
+      setConvertedContentToHTML(html);
     }
   }, [editorState]);
 
@@ -66,12 +59,51 @@ const ReactDraftEditor = () => {
     const filenameWithExtension = filename.endsWith(".pdf")
       ? filename
       : filename + ".pdf";
-    generatePDF(targetRef, { filename: filenameWithExtension });
+    const options = {
+      method: "save", // open allows you to see PDF first
+      // default is Resolution.MEDIUM = 3, which should be enough, higher values
+      // increases the image quality but also the size of the PDF, so be careful
+      // using values higher than 10 when having multiple pages generated, it
+      // might cause the page to crash or hang.
+      resolution: Resolution.HIGH,
+      page: {
+        // margin is in MM, default is Margin.NONE = 0
+        margin: Margin.MEDIUM,
+        format: "A4",
+        orientation: "portrait",
+      },
+      canvas: {
+        // default is 'image/jpeg' for better size performance
+        mimeType: "image/jpeg",
+        qualityRatio: 1,
+      },
+      // Customize any value passed to the jsPDF instance and html2canvas
+      // function. You probably will not need this and things can break,
+      // so use with caution.
+      overrides: {
+        // see https://artskydj.github.io/jsPDF/docs/jsPDF.html for more options
+        pdf: {
+          compress: true,
+        },
+        // see https://html2canvas.hertzen.com/configuration for more options
+        canvas: {
+          useCORS: true,
+        },
+      },
+      filename: filenameWithExtension,
+    };
+    // generatePDF(targetRef, { filename: filenameWithExtension });
+    generatePDF(targetRef, options);
   };
 
   const handleFilenameChange = (newFilename) => {
     setFilename(newFilename);
   };
+
+  const containerStyles = {
+    whiteSpace: 'normal',
+    overflowWrap: 'break-word'
+  }
 
   return (
     <div>
@@ -116,6 +148,7 @@ const ReactDraftEditor = () => {
       {/* PREVIEW COMPONENT */}
       <h4>Preview text:</h4>
       <div
+        style={containerStyles}
         className="preview"
         ref={targetRef}
         dangerouslySetInnerHTML={{ __html: convertedContentToHTML }}
