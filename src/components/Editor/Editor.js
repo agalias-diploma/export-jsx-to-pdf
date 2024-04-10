@@ -11,239 +11,17 @@ import InputFileName from "../Input/InputFileName";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./Editor.css";
 
-// const DATA = {
-//   student: "Галяс А.В.",
-//   group: "341",
-//   lecturer: "Кириченко О.О.",
-//   subject: "Node.js",
-//   lab_num: 7,
-//   lab_title: "Авторизація",
-//   year: 2024,
-// }
-
-// ------------- It's a preDefined HTML content from Editor (it's generated from rawJS) 
-// const preDefinedHTML = `
-// <div class="rdw-center-aligned-block" data-block="true" data-editor="2rfk3"
-//         data-offset-key="2ble6-0-0">
-//         <div data-offset-key="2ble6-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="2ble6-0-0"
-//                 style="font-family: &quot;Times New Roman&quot;; font-weight: bold; font-size: 20px;"><span
-//                     data-text="true">Чернівецький національний універиситет імені Юрія
-//                     Федьковича</span></span></div>
-//     </div>
-//     <div class="rdw-center-aligned-block" data-block="true" data-editor="2rfk3"
-//         data-offset-key="37vue-0-0">
-//         <div data-offset-key="37vue-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="37vue-0-0"
-//                 style="font-family: &quot;Times New Roman&quot;; font-weight: bold; font-size: 20px;"><span
-//                     data-text="true">Інститу фізико-технічних та комп'ютерний наук</span></span></div>
-//     </div>
-//     <div class="rdw-center-aligned-block" data-block="true" data-editor="2rfk3"
-//         data-offset-key="fb6ot-0-0">
-//         <div data-offset-key="fb6ot-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="fb6ot-0-0"
-//                 style="font-family: &quot;Times New Roman&quot;; font-size: 20px;"><span
-//                     data-text="true">Відділ комп'ютерних технологій</span></span></div>
-//     </div>
-//     <div class="rdw-center-aligned-block" data-block="true" data-editor="2rfk3"
-//         data-offset-key="2fpug-0-0">
-//         <div data-offset-key="2fpug-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="2fpug-0-0"
-//                 style="font-family: &quot;Times New Roman&quot;; font-size: 20px;"><span
-//                     data-text="true">Кафедра математичних проблем і управління кібернетики</span></span>
-//         </div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="c01hd-0-0">
-//         <div data-offset-key="c01hd-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="c01hd-0-0"><br data-text="true"></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="dibul-0-0">
-//         <div data-offset-key="dibul-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="dibul-0-0"><br data-text="true"></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="31p3k-0-0">
-//         <div data-offset-key="31p3k-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="31p3k-0-0"><br data-text="true"></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="dakho-0-0">
-//         <div data-offset-key="dakho-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="dakho-0-0"><br data-text="true"></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="9fqgn-0-0">
-//         <div data-offset-key="9fqgn-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="9fqgn-0-0"><br data-text="true"></span></div>
-//     </div>
-//     <div class="rdw-center-aligned-block" data-block="true" data-editor="2rfk3"
-//         data-offset-key="34rlj-0-0">
-//         <div data-offset-key="34rlj-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="34rlj-0-0"
-//                 style="font-family: &quot;Times New Roman&quot;; font-size: 20px;"><span
-//                     data-text="true">ЗВІТ</span></span></div>
-//     </div>
-//     <div class="rdw-center-aligned-block" data-block="true" data-editor="2rfk3"
-//         data-offset-key="6vqr0-0-0">
-//         <div data-offset-key="6vqr0-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="6vqr0-0-0"
-//                 style="font-family: &quot;Times New Roman&quot;; font-size: 20px;"><span
-//                     data-text="true">про виконання лабораторної роботи №${DATA.lab_num}</span></span></div>
-//     </div>
-//     <div class="rdw-center-aligned-block" data-block="true" data-editor="2rfk3"
-//         data-offset-key="670nv-0-0">
-//         <div data-offset-key="670nv-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="670nv-0-0"
-//                 style="font-family: &quot;Times New Roman&quot;; font-size: 20px;"><span
-//                     data-text="true">"${DATA.lab_title}"</span></span></div>
-//     </div>
-//     <div class="rdw-center-aligned-block" data-block="true" data-editor="2rfk3"
-//         data-offset-key="489l5-0-0">
-//         <div data-offset-key="489l5-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="489l5-0-0"
-//                 style="font-family: &quot;Times New Roman&quot;; font-size: 20px;"><span
-//                     data-text="true">з дисципліни</span></span></div>
-//     </div>
-//     <div class="rdw-center-aligned-block" data-block="true" data-editor="2rfk3"
-//         data-offset-key="8qm9s-0-0">
-//         <div data-offset-key="8qm9s-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="8qm9s-0-0"
-//                 style="font-family: &quot;Times New Roman&quot;; font-size: 20px;"><span
-//                     data-text="true">"${DATA.subject}" </span></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="1o7k7-0-0">
-//         <div data-offset-key="1o7k7-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="1o7k7-0-0"><br data-text="true"></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="7t32l-0-0">
-//         <div data-offset-key="7t32l-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="7t32l-0-0"><br data-text="true"></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="3q84j-0-0">
-//         <div data-offset-key="3q84j-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="3q84j-0-0"><br data-text="true"></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="6t1jc-0-0">
-//         <div data-offset-key="6t1jc-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="6t1jc-0-0"><br data-text="true"></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="4ftpm-0-0">
-//         <div data-offset-key="4ftpm-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="4ftpm-0-0"
-//                 style="font-family: &quot;Times New Roman&quot;; font-size: 20px;"><span
-//                     data-text="true"> Виконав: студент ${DATA.group} групи</span></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="9333e-0-0">
-//         <div data-offset-key="9333e-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="9333e-0-0"
-//                 style="font-family: &quot;Times New Roman&quot;; font-size: 20px;"><span
-//                     data-text="true"> ${DATA.student}</span></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="e8css-0-0">
-//         <div data-offset-key="e8css-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="e8css-0-0"
-//                 style="font-family: &quot;Times New Roman&quot;; font-size: 20px;"><span
-//                     data-text="true"> Перевірила: ${DATA.lecturer} </span></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="5patm-0-0">
-//         <div data-offset-key="5patm-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="5patm-0-0"
-//                 style="font-family: &quot;Times New Roman&quot;; font-size: 20px;"><span
-//                     data-text="true"> Оцінка:</span></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="866mh-0-0">
-//         <div data-offset-key="866mh-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="866mh-0-0"
-//                 style="font-family: &quot;Times New Roman&quot;; font-size: 20px;"><span
-//                     data-text="true"> Дата захисту:</span></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="9i36p-0-0">
-//         <div data-offset-key="9i36p-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="9i36p-0-0"><br data-text="true"></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="8c9ef-0-0">
-//         <div data-offset-key="8c9ef-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="8c9ef-0-0"><br data-text="true"></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="3uk39-0-0">
-//         <div data-offset-key="3uk39-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="3uk39-0-0"><br data-text="true"></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="amvio-0-0">
-//         <div data-offset-key="amvio-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="amvio-0-0"><br data-text="true"></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="7jgo1-0-0">
-//         <div data-offset-key="7jgo1-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="7jgo1-0-0"><br data-text="true"></span></div>
-//     </div>
-//     <div class="rdw-center-aligned-block" data-block="true" data-editor="2rfk3"
-//         data-offset-key="djs6o-0-0">
-//         <div data-offset-key="djs6o-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="djs6o-0-0"
-//                 style="font-family: &quot;Times New Roman&quot;; font-size: 20px;"><span
-//                     data-text="true">Чернівці ${DATA.year}</span></span></div>
-//     </div>
-//     <div class="" data-block="true" data-editor="2rfk3" data-offset-key="cnik9-0-0">
-//         <div data-offset-key="cnik9-0-0"
-//             class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"><span
-//                 data-offset-key="cnik9-0-0"><br data-text="true"></span></div>
-//     </div>
-// `;
-
-// const blocksFromHTML = convertFromHTML(preDefinedHTML);
-
-// const content = ContentState.createFromBlockArray(
-//   blocksFromHTML.contentBlocks,
-//   blocksFromHTML.entityMap
-// );
-
-import editorStateJSON from "./editorState.json"; // it's initial state of Editor with some formatted content
-
-console.log("EDITOR STATE JSON----------------------------")
-console.log(editorStateJSON);
-console.log("EDITOR STATE JSON----------------------------")
-
+import rawObject from "./rawContent";
 
 const ReactDraftEditor = () => {
   const [editorState, setEditorState] = useState(() =>
-    // EditorState.createEmpty()
-    // EditorState.createWithContent(
-    //   ContentState.createFromBlockArray(
-    //     convertFromHTML(preDefinedHTML)
-    //   )
-    // )
-    EditorState.createWithContent(convertFromRaw(editorStateJSON))
+    // EditorState.createWithContent(convertFromRaw(editorStateJSON))
+    EditorState.createWithContent(convertFromRaw(JSON.parse(rawObject)))
   );
-  console.log(editorState); // get initial editorState
   const [convertedContentToHTML, setConvertedContentToHTML] = useState("");
   const [filename, setFilename] = useState("document");
+
+  const [convertedContentToJSON, setConvertedContentToJSON] = useState(null);
 
   useEffect(() => {
     // proceed when state is not null
@@ -251,6 +29,10 @@ const ReactDraftEditor = () => {
       // Convert editorState into HTML in order to print data on page
       let html = draftToHtml(convertToRaw(editorState.getCurrentContent()));
       html = sanitizeHtml(html);
+
+      let rawContent = convertToRaw(editorState.getCurrentContent());
+      setConvertedContentToJSON(rawContent);
+      console.log(convertedContentToJSON);
 
       let styledHtml = html;
       // styledHtml = styledHtml.replace(/(<p><\/p>\s*){2,}/g, (match) =>
