@@ -1,0 +1,11 @@
+.component-set {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+  
+/* .component-set > * {
+  margin-right: 1rem;
+} */
+   

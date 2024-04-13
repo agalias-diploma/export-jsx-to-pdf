@@ -1,5 +1,6 @@
 import React from "react";
 import "../../App.css";
+import "./InputFileName.css";
 
 const InputFileName = ({ filename, onFilenameChange }) => {
   const handleFilenameChange = (e) => {

@@ -3,7 +3,7 @@ import "../../App.css";
 
 const ButtonComponent = ({ onClick, children, text }) => {
   return (
-    <button onClick={onClick}>
+    <button className="btn btn-primary" onClick={onClick}>
       {text || children}
     </button>
   );

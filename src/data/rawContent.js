@@ -437,17 +437,6 @@ const obj = `{
             "data": {}
         },
         {
-            "key": "70i9u",
-            "text": "",
-            "type": "unstyled",
-            "depth": 0,
-            "inlineStyleRanges": [],
-            "entityRanges": [],
-            "data": {
-                "text-align": "center"
-            }
-        },
-        {
             "key": "1ujc1",
             "text": "Чернівці ${DATA.year}",
             "type": "unstyled",
