@@ -1,9 +1,10 @@
 import React from "react";
+import "./PreviewComponent.css";
 
 const containerStyles = {
     whiteSpace: "normal",
     overflowWrap: "break-word",
-    margin: "0 auto",
+    margin: "2rem auto",
 };
 
 const PreviewComponent = ({ convertedContentToHTML, targetRef }) => {

@@ -1,5 +1,6 @@
 .app-header {
-    background-color: #585675;
+    background-color: #4c4a69;
+    width: 100%;
     min-height: 5vh;
     display: flex;
     align-items: center;
@@ -9,5 +10,15 @@
     margin-bottom: 2vh;
     text-align: center;
     padding: 12px;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.25);
+}
+
+header h1 {
+    font-size: calc(36px + 0.5vmin);
+    background-image: linear-gradient(to bottom left, #f7a0ff, #94e6ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 600;
 }
   

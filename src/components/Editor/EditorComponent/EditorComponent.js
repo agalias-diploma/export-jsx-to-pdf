@@ -1,6 +1,7 @@
 // EditorComponent.js
 import React from "react";
 import { Editor } from "react-draft-wysiwyg";
+import "../Editor.css";
 
 const EditorComponent = ({ editorState, onEditorStateChange }) => {
   return (

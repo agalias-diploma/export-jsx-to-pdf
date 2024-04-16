@@ -10,13 +10,15 @@ import generatePDF, { Resolution, Margin } from "react-to-pdf";
 
 import ButtonComponent from "../Button/Button";
 import InputFileName from "../Input/InputFileName";
-import ComponentSet from "../ComponentSet/ComponentSet";
+import ButtonGroup from "../ButtonGroup/ButtonGroup";
 import EditorComponent from "./EditorComponent/EditorComponent";
 import PreviewComponent from "../PreviewComponent/PreviewComponent";
 import {
   handleDownloadContentAsJS,
   handleDownloadPDF,
 } from "../DownloadFunctions";
+import Footer from "../Footer/Footer";
+import { Box } from "@mui/material";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./Editor.css";
@@ -27,7 +29,7 @@ const ReactDraftEditor = ({ rawContent }) => {
   );
 
   const [convertedContentToHTML, setConvertedContentToHTML] = useState("");
-  const [filename, setFilename] = useState("document");
+  const [filename, setFilename] = useState("");
 
   useEffect(() => {
     // proceed when state is not null
@@ -69,13 +71,13 @@ const ReactDraftEditor = ({ rawContent }) => {
         editorState={editorState}
         onEditorStateChange={handleEditorStateChange}
       />
-      <h3>Preview text</h3>
-      <PreviewComponent
-        convertedContentToHTML={convertedContentToHTML}
-        targetRef={targetRef}
-      />
-      <div>
-        <ComponentSet>
+      <Box 
+        display="flex" 
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <ButtonGroup>
           <ButtonComponent
             onClick={() => handleDownloadContentAsJS(editorState, filename)}
             text="Download as JS"
@@ -84,12 +86,18 @@ const ReactDraftEditor = ({ rawContent }) => {
             onClick={() => handleDownloadPDF(targetRef, filename, Resolution, Margin, generatePDF)} 
             text="Download PDF"
           />
-        </ComponentSet>
+        </ButtonGroup>
         <InputFileName
           filename={filename}
           onFilenameChange={handleFilenameChange}
         />
-      </div>
+      </Box>
+      <h3>Expected PDF File</h3>
+      <PreviewComponent
+        convertedContentToHTML={convertedContentToHTML}
+        targetRef={targetRef}
+      />
+      {/* <Footer></Footer> */}
     </div>
   );
 };
