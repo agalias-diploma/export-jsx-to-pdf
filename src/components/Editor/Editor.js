@@ -74,7 +74,7 @@ const ReactDraftEditor = ({ rawContent }) => {
         convertedContentToHTML={convertedContentToHTML}
         targetRef={targetRef}
       />
-      <div className="btn-group" role="btn">
+      <div>
         <ComponentSet>
           <ButtonComponent
             onClick={() => handleDownloadContentAsJS(editorState, filename)}
