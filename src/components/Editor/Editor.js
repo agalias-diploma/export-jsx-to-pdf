@@ -16,7 +16,7 @@ import PreviewComponent from "../PreviewComponent/PreviewComponent";
 import {
   handleDownloadContentAsJS,
   handleDownloadPDF,
-} from "../DownloadFunctions";
+} from "../DownloadFunctions/DownloadFunctions";
 import Footer from "../Footer/Footer";
 import { Box } from "@mui/material";
 

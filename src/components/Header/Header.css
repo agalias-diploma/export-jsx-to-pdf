@@ -1,6 +1,6 @@
 .app-header {
     background-color: #4c4a69;
-    width: 100%;
+    /* width: 100%; */
     min-height: 5vh;
     display: flex;
     align-items: center;
