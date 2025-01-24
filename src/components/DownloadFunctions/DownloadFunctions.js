@@ -28,17 +28,16 @@ export const handleDownloadPDF = (
     ? filename
     : filename + ".pdf";
   const options = {
-    // method: "open", 
-    // default is `save`
-    resolution: Resolution = 4, 
+    method: "save", // `open` - preview of PDF
+    resolution: Resolution = 2, // could be LOW/MEDIUM/HIGH 
     page: {
-      margin: Margin.MEDIUM,
-      format: "A2",
-      orientation: "portrait",
+      margin: Margin.MEDIUM, // can be setted in px/pt too
+      format: "A4", // A1-A6
+      orientation: "portrait", // `landscape`
     },
     canvas: {
-      mimeType: "image/jpeg",
-      qualityRatio: 1,
+      mimeType: "image/jpeg", 
+      qualityRatio: 1, // quality of images
     },
     overrides: {
       pdf: {
