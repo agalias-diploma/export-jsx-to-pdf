@@ -1,11 +1,13 @@
 import React from "react";
 import "../../App.css";
 
+import Button from '@mui/material/Button';
+
 const ButtonComponent = ({ onClick, children, text }) => {
   return (
-    <button onClick={onClick}>
+    <Button variant="contained" onClick={onClick}>
       {text || children}
-    </button>
+    </Button>
   );
 };
 
