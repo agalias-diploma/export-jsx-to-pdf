@@ -1,0 +1,10 @@
+.preview {
+    padding: 1rem;
+    margin: 0 1rem 0rem 1rem;
+    width: 210mm; /* A4 width in millimeters */
+    /* height: 302mm;  */
+    box-shadow: 0 .5mm 2mm rgba(0,0,0,.3);
+    overflow-y: auto; /* Enable vertical scrolling */
+    /* background-color:#d9e7f8; */
+    /* border: 1px solid #beddff; */
+}

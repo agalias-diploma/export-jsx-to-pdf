@@ -34,3 +34,9 @@ Field for entering file name
 
 Currently, text in the PDF is too small in comparsion with MS Word 
 Skipping whitespaces (it doesn't parse multiple whitespaces for now)
+
+Option to save snapshot of Editor state (download json actually as we do for PDF)
+
+Provide data for the template in .json format
+
+It's better to use Material UI since it works better with my app (don't override all styles during import) 
