@@ -86,6 +86,10 @@ const ReactDraftEditor = ({ rawContent }) => {
             onClick={() => handleDownloadPDF(targetRef, filename, Resolution, Margin, generatePDF)} 
             text="Download PDF"
           />
+          {/* <ButtonComponent
+            onClick={() => handleLoadTemplate()} 
+            text="Load Template"
+          /> */}
         </ButtonGroup>
         <InputFileName
           filename={filename}
