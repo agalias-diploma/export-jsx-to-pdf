@@ -2,11 +2,12 @@ import './App.css';
 import React from 'react';
 import Editor from './components/Editor/Editor.js';
 import Header from './components/Header/Header.js';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
 
 import rawContent from './data/rawContent.js';
+import ButtonComponent from './components/Button/Button.js';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,40 +22,38 @@ const App = () => {
   useEffect(() => {
     // Attempt to retrieve token from localStorage on app start
     const storedToken = localStorage.getItem('token');
+
     if (storedToken) {
-      setToken(storedToken);
-      setIsLoggedIn(true);
+      try {
+        // Decode token without sending request
+        const decodedToken = jwtDecode(storedToken);
   
-      // Optionally fetch user details using the stored token
-      axios
-        .get('http://localhost:3000/users/me', {
-          headers: {
-            Authorization: `Bearer ${storedToken}`,
-          },
-        })
-        .then((response) => setUser(response.data))
-        .catch((error) => console.error('Failed to fetch user:', error));
+        // Check expiration
+        if (decodedToken.exp * 1000 > Date.now()) {
+          setToken(storedToken);
+          setIsLoggedIn(true);
+          setUser({ name: decodedToken.user.email }); // Set user without backend request
+        } else {
+          console.log("Token expired, logging out...");
+          handleLogout();
+        }
+      } catch (error) {
+        console.error("Invalid token:", error);
+        handleLogout();
+      }
     }
     
     // Check URL for token after OAuth redirect
     const params = new URLSearchParams(window.location.search);
     const urlToken = params.get('token');
+    
     if (urlToken) {
       localStorage.setItem('token', urlToken);
       setToken(urlToken);
       setIsLoggedIn(true);
-    
-      // Optionally fetch user details using the new token
-      axios
-        .get('http://localhost:3000/users/me', {
-          headers: {
-            Authorization: `Bearer ${urlToken}`,
-          },
-        })
-        .then((response) => setUser(response.data))
-        .catch((error) => console.error('Failed to fetch user:', error));
-    
-      // Clear the query string to prevent issues
+      setUser({ name: jwtDecode(urlToken).user.email });
+
+      // Clear query params from URL
       window.history.replaceState({}, document.title, '/');
     }
   }, []);
@@ -74,6 +73,7 @@ const App = () => {
           <button onClick={handleLogin}>
             Sign In with Google
           </button>
+          <Editor rawContent={rawContent} />
         </div>
       ) : (
         <>
@@ -82,6 +82,9 @@ const App = () => {
             Sign Out
           </button>
           <Editor rawContent={rawContent} />
+          <ButtonComponent 
+            text="S3 bucket"
+          />
         </>
       )}
     </div>
