@@ -4,11 +4,16 @@ import useAuth from './hooks/useAuth';
 import Editor from './components/Editor/Editor';
 import Header from './components/Header/Header';
 import LoggedInUser from './components/LoggedInUser/LoggedInUser';
+import LoadingScreen from "./components/LoadingScreen/LoadingScreen";
 
-import rawContent from './data/rawContent'; // JavaScript template by default
+import rawContent from './data/rawContent';
 
 const App = () => {
-  const { isLoggedIn, user, token, handleLogin, handleLogout } = useAuth();
+  const { isLoggedIn, user, token, loading, handleLogin, handleLogout } = useAuth();
+
+  if (loading) {
+    return <LoadingScreen />; // Prevent UI flickering
+  }
 
   return (
     <div className="App">

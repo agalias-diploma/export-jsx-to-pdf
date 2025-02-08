@@ -5,36 +5,43 @@ const useAuth = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
+  const [loading, setLoading] = useState(true); // Added loading state
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
+    const checkAuth = async () => {
+      const storedToken = localStorage.getItem('token');
 
-    if (storedToken) {
-      try {
-        const decodedToken = jwtDecode(storedToken);
-        if (decodedToken.exp * 1000 > Date.now()) {
-          setToken(storedToken);
-          setIsLoggedIn(true);
-          setUser({ name: decodedToken.user.email });
-        } else {
+      if (storedToken) {
+        try {
+          const decodedToken = jwtDecode(storedToken);
+          if (decodedToken.exp * 1000 > Date.now()) {
+            setToken(storedToken);
+            setIsLoggedIn(true);
+            setUser({ name: decodedToken.user.email });
+          } else {
+            handleLogout();
+          }
+        } catch (error) {
+          console.error('Invalid token:', error);
           handleLogout();
         }
-      } catch (error) {
-        console.error('Invalid token:', error);
-        handleLogout();
       }
-    }
 
-    const params = new URLSearchParams(window.location.search);
-    const urlToken = params.get('token');
+      const params = new URLSearchParams(window.location.search);
+      const urlToken = params.get('token');
 
-    if (urlToken) {
-      localStorage.setItem('token', urlToken);
-      setToken(urlToken);
-      setIsLoggedIn(true);
-      setUser({ name: jwtDecode(urlToken).user.email });
-      window.history.replaceState({}, document.title, '/');
-    }
+      if (urlToken) {
+        localStorage.setItem('token', urlToken);
+        setToken(urlToken);
+        setIsLoggedIn(true);
+        setUser({ name: jwtDecode(urlToken).user.email });
+        window.history.replaceState({}, document.title, '/');
+      }
+
+      setLoading(false); // Done checking auth
+    };
+
+    checkAuth();
   }, []);
 
   const handleLogin = () => {
@@ -46,9 +53,10 @@ const useAuth = () => {
     setToken(null);
     setUser(null);
     setIsLoggedIn(false);
+    setLoading(false);
   };
 
-  return { isLoggedIn, user, token, handleLogin, handleLogout };
+  return { isLoggedIn, user, token, loading, handleLogin, handleLogout };
 };
 
 export default useAuth;

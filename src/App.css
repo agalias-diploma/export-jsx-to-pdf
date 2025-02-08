@@ -2,3 +2,10 @@ h3 {
   text-align: center;
   margin: 1.5rem auto;
 }
+
+.loading-screen {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 20%;
+}
