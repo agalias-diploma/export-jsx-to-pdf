@@ -3,7 +3,8 @@ import React from 'react';
 import useAuth from './hooks/useAuth';
 import Editor from './components/Editor/Editor';
 import Header from './components/Header/Header';
-import LoggedInUser from './components/LoggedInUser/LoggedInUser';
+import AuthorizedUser from './components/WhichUser/AuthorizedUser/AuthorizedUser';
+import UnauthorizedUser from './components/WhichUser/UnauthorizedUser/UnauthorizedUser';
 import LoadingScreen from "./components/LoadingScreen/LoadingScreen";
 
 import rawContent from './data/rawContent';
@@ -19,13 +20,13 @@ const App = () => {
     <div className="App">
       <Header />
       {!isLoggedIn ? (
-        <div>
-          <button onClick={handleLogin}>Sign In with Google</button>
+        <>
+          <UnauthorizedUser handleLogin={handleLogin} />
           <Editor rawContent={rawContent} />
-        </div>
+        </>
       ) : (
         <>
-          <LoggedInUser user={user} token={token} handleLogout={handleLogout} />
+          <AuthorizedUser user={user} token={token} handleLogout={handleLogout} />
           <Editor rawContent={rawContent} />
         </>
       )}
