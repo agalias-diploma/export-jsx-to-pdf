@@ -7,9 +7,10 @@ import './AuthorizedUser.css';
 const LoggedInUser = ({ user, token, handleLogout }) => {
   const { fetchFiles } = useS3Files(token);
   const [fetchedFiles, setFetchedFiles] = useState([]); // Local state to store files
-  const [showFiles, setShowFiles] = useState(false); // State for controlling visibility of the table
+  const [showFiles, setShowFiles] = useState(false); // State for controlling visibility of the table and note
   const [loading, setLoading] = useState(false); // State for tracking if files are being loaded
   const [lastFetched, setLastFetched] = useState(Date.now()); // Track the last fetch time
+  const [selectedTemplate, setSelectedTemplate] = useState(localStorage.getItem('selectedTemplate') || ''); // Load from storage
 
   // Polling interval (30 seconds)
   const pollInterval = 30000;
@@ -23,6 +24,30 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
       }
     } catch (error) {
       console.error('Error checking for new files:', error);
+    }
+  };
+
+  // Handle template selection
+  const handleSelectTemplate = async (templateKey) => {
+    try {
+      // Call API to set selected template
+      const response = await fetch('/api/s3-select-template', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ templateKey }),
+      });
+
+      if (response.ok) {
+        setSelectedTemplate(templateKey); // Update state
+        localStorage.setItem('selectedTemplate', templateKey); // Save to local storage
+      } else {
+        console.error('Failed to select template');
+      }
+    } catch (error) {
+      console.error('Error selecting template:', error);
     }
   };
 
@@ -49,7 +74,7 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
         setLoading(false); // Stop loading after the request is complete
       }
     }
-    setShowFiles((prevState) => !prevState); // Toggle the visibility of the table
+    setShowFiles((prevState) => !prevState); // Toggle the visibility of the table and note
   };
 
   return (
@@ -79,6 +104,7 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
                   <TableCell>Filename</TableCell>
                   <TableCell>Size (bytes)</TableCell>
                   <TableCell>Last Modified</TableCell>
+                  <TableCell>Action</TableCell> {/* New column for selecting template */}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -87,12 +113,32 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
                     <TableCell>{file.key}</TableCell>
                     <TableCell>{file.size}</TableCell>
                     <TableCell>{new Date(file.lastModified).toLocaleString()}</TableCell>
+                    <TableCell>
+                      {/* Only show the button if it's not a folder (i.e., size > 0) */}
+                      {file.size > 0 && selectedTemplate !== file.key ? (
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => handleSelectTemplate(file.key)}
+                        >
+                          Select
+                        </Button>
+                      ) : (
+                        // Render a label for directories (or leave it empty)
+                        file.size === 0 && <span>Folder</span>
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
         )}
+      </Collapse>
+      <Collapse in={showFiles} timeout="auto" unmountOnExit>
+        <div style={{ marginTop: '15px', fontSize: '12px', color: 'gray', textAlign: 'right' }}>
+          Note: This data might not be up-to-date.
+        </div>
       </Collapse>
     </div>
   );
