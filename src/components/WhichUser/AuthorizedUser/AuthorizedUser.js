@@ -29,26 +29,26 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
 
   // Handle template selection
   const handleSelectTemplate = async (templateKey) => {
-    try {
-      // Call API to set selected template
-      const response = await fetch('/api/s3-select-template', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ templateKey }),
-      });
+    // try {
+    //   // Call API to set selected template
+    //   const response = await fetch('/api/s3-select-template', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Authorization: `Bearer ${token}`,
+    //     },
+    //     body: JSON.stringify({ templateKey }),
+    //   });
 
-      if (response.ok) {
-        setSelectedTemplate(templateKey); // Update state
-        localStorage.setItem('selectedTemplate', templateKey); // Save to local storage
-      } else {
-        console.error('Failed to select template');
-      }
-    } catch (error) {
-      console.error('Error selecting template:', error);
-    }
+    //   if (response.ok) {
+    //     setSelectedTemplate(templateKey); // Update state
+    //     localStorage.setItem('selectedTemplate', templateKey); // Save to local storage
+    //   } else {
+    //     console.error('Failed to select template');
+    //   }
+    // } catch (error) {
+    //   console.error('Error selecting template:', error);
+    // }
   };
 
   // Polling files check every 30 seconds
@@ -104,17 +104,16 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
                   <TableCell>Filename</TableCell>
                   <TableCell>Size (bytes)</TableCell>
                   <TableCell>Last Modified</TableCell>
-                  <TableCell>Action</TableCell> {/* New column for selecting template */}
+                  <TableCell>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {fetchedFiles.map((file) => (
+                {fetchedFiles.filter(file => file.size > 0).map((file) => (
                   <TableRow key={file.key}>
                     <TableCell>{file.key}</TableCell>
                     <TableCell>{file.size}</TableCell>
                     <TableCell>{new Date(file.lastModified).toLocaleString()}</TableCell>
                     <TableCell>
-                      {/* Only show the button if it's not a folder (i.e., size > 0) */}
                       {file.size > 0 && selectedTemplate !== file.key ? (
                         <Button
                           variant="contained"
@@ -125,7 +124,7 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
                         </Button>
                       ) : (
                         // Render a label for directories (or leave it empty)
-                        file.size === 0 && <span>Folder</span>
+                        file.size === 0 && <span></span>
                       )}
                     </TableCell>
                   </TableRow>
