@@ -10,14 +10,13 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
   const [showFiles, setShowFiles] = useState(false); // State for controlling visibility of the table and note
   const [loading, setLoading] = useState(false); // State for tracking if files are being loaded
   const [lastFetched, setLastFetched] = useState(Date.now()); // Track the last fetch time
-  const [selectedTemplate, setSelectedTemplate] = useState(localStorage.getItem('selectedTemplate') || ''); // Load from storage
 
   // Polling interval (30 seconds)
   const pollInterval = 30000;
 
   const checkForNewFiles = async () => {
     try {
-      const response = await fetch(`/api/check-for-new-files?userId=${user.id}`);
+      const response = await fetch(`/api/s3-check-for-new-files?userId=${user.id}`);
       const data = await response.json();
       if (data.hasNewFiles) {
         setFetchedFiles(await fetchFiles()); // Fetch and update files if new ones are available
@@ -27,29 +26,39 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
     }
   };
 
-  // Handle template selection
   const handleSelectTemplate = async (templateKey) => {
-    // try {
-    //   // Call API to set selected template
-    //   const response = await fetch('/api/s3-select-template', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //     body: JSON.stringify({ templateKey }),
-    //   });
-
-    //   if (response.ok) {
-    //     setSelectedTemplate(templateKey); // Update state
-    //     localStorage.setItem('selectedTemplate', templateKey); // Save to local storage
-    //   } else {
-    //     console.error('Failed to select template');
-    //   }
-    // } catch (error) {
-    //   console.error('Error selecting template:', error);
-    // }
-  };
+    try {
+      const response = await fetch(`http://localhost:3000/api/s3-file-content?fileKey=${templateKey}`, {
+        method: 'GET',
+        headers: { Authorization: token },
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error("Error making request to backend on /s3-file-content endpoint:", errorData);
+        return;
+      }
+  
+      const textData = await response.text(); // Get the raw response text
+  
+      // Remove the JavaScript code at the start and end to get the JSON content
+      const sanitizedData = textData.replace(/^const obj = `/, '').replace(/`;\s*export default obj;$/, '');
+  
+      // Try to parse the sanitized string as JSON
+      try {
+        const jsonData = JSON.parse(sanitizedData);
+        console.log("Successfully parsed JSON:", jsonData);
+  
+        // Save the parsed JSON to localStorage
+        localStorage.setItem('selectedTemplate', JSON.stringify(jsonData));
+  
+      } catch (jsonError) {
+        console.error("JSON Parse error:", jsonError, sanitizedData, "\n It's probably a template which is not made by this Editor!");
+      }
+    } catch (error) {
+      console.error("Error fetching template:", error);
+    }
+  };  
 
   // Polling files check every 30 seconds
   useEffect(() => {
@@ -114,18 +123,13 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
                     <TableCell>{file.size}</TableCell>
                     <TableCell>{new Date(file.lastModified).toLocaleString()}</TableCell>
                     <TableCell>
-                      {file.size > 0 && selectedTemplate !== file.key ? (
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => handleSelectTemplate(file.key)}
-                        >
-                          Select
-                        </Button>
-                      ) : (
-                        // Render a label for directories (or leave it empty)
-                        file.size === 0 && <span></span>
-                      )}
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleSelectTemplate(file.key)}
+                      >
+                        Select
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}

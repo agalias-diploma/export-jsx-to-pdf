@@ -23,10 +23,16 @@ import { Box } from "@mui/material";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./Editor.css";
 
-const ReactDraftEditor = ({ rawContent }) => {
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createWithContent(convertFromRaw(JSON.parse(rawContent)))
-  );
+const ReactDraftEditor = ({ rawContent, selectedTemplate, setSelectedTemplate }) => {
+  const [editorState, setEditorState] = useState(() => {
+    if (selectedTemplate) {
+      // If template is selected, load it into the editor state
+      return EditorState.createWithContent(convertFromRaw(selectedTemplate));
+    } else {
+      // Otherwise, fall back to the rawContent.js file
+      return EditorState.createWithContent(convertFromRaw(JSON.parse(rawContent)));
+    }
+  });
 
   const [convertedContentToHTML, setConvertedContentToHTML] = useState("");
   const [filename, setFilename] = useState("");
@@ -46,6 +52,12 @@ const ReactDraftEditor = ({ rawContent }) => {
 
       setConvertedContentToHTML(styledHtml);
     }
+  }, [editorState]);
+
+  useEffect(() => {
+    // Save the current editorState (JSON) to localStorage whenever it changes
+    const content = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
+    localStorage.setItem('selectedTemplate', content);
   }, [editorState]);
 
   const targetRef = useRef();
