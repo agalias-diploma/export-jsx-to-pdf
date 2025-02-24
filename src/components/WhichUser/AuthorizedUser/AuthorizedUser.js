@@ -16,7 +16,7 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
 
   const checkForNewFiles = async () => {
     try {
-      const response = await fetch(`/api/s3-check-for-new-files?userId=${user.id}`);
+      const response = await fetch(`http://localhost:3000/api/s3-check-for-new-files?userId=${user.id}`);
       const data = await response.json();
       if (data.hasNewFiles) {
         setFetchedFiles(await fetchFiles()); // Fetch and update files if new ones are available
@@ -58,7 +58,26 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
     } catch (error) {
       console.error("Error fetching template:", error);
     }
-  };  
+  };
+
+  const handleDeleteFile = async (fileKey) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/s3-delete-file?fileKey=${fileKey}`, {
+        method: 'DELETE',
+        headers: { Authorization: token },
+      });
+  
+      if (response.ok) {
+        setFetchedFiles(fetchedFiles.filter(file => file.key !== fileKey)); // Remove the file from the table
+      } else {
+        const errorData = await response.json();
+        alert(`Error deleting file: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      alert("Error deleting file. Please try again.");
+    }
+  };
 
   // Polling files check every 30 seconds
   useEffect(() => {
@@ -88,6 +107,7 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
 
   return (
     <div style={{ padding: '20px' }}>
+      {/* remove it later */}
       <h1>Welcome, {user?.name || 'User'}</h1>
 
       <div style={{ marginBottom: '15px' }}>
@@ -99,6 +119,7 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
         >
           Sign Out
         </Button>
+        {/* Add functionality to block this button when user unathorized */}
         <ButtonComponent text="Show my S3 files" onClick={handleFetchFiles} />
 
         {loading && <CircularProgress size={24} style={{ marginLeft: '10px' }} />}
@@ -129,6 +150,14 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
                         onClick={() => handleSelectTemplate(file.key)}
                       >
                         Select
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="error" // Red delete button
+                        onClick={() => handleDeleteFile(file.key)}
+                        style={{ marginLeft: '10px' }}
+                      >
+                        Delete
                       </Button>
                     </TableCell>
                   </TableRow>

@@ -17,8 +17,8 @@ import {
   handleDownloadContentAsJS,
   handleDownloadPDF,
 } from "../DownloadFunctions/DownloadFunctions";
-import Footer from "../Footer/Footer";
 import { Box } from "@mui/material";
+import axios from 'axios'; // Add axios for API requests
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./Editor.css";
@@ -77,6 +77,50 @@ const ReactDraftEditor = ({ rawContent, selectedTemplate, setSelectedTemplate })
     setFilename(newFilename);
   };
 
+  // Function to save file content to S3 via backend
+  const saveFileContentToS3 = async () => {
+    const content = convertToRaw(editorState.getCurrentContent());
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("User is not authenticated");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        'http://localhost:3000/api/s3-save-template',
+        {
+          filename,
+          content
+        },
+        {
+          headers: { Authorization: token }
+        }
+      );
+      console.log('File saved successfully', response.data);
+    } catch (error) {
+      console.error('Error saving file to S3:', error);
+      if (error.response) {
+        if (error.response.status === 401) {
+          alert('You need to sign into to be able to save templates.');
+        } else if (error.response.status === 409) {
+          alert('File already exists. Please enter a different filename');
+        } else if (error.response.status === 401) {
+          alert("Unauthorized. Please log in again.");
+        } else if (error.response.status === 500) {
+          alert("Server error. Please try again later.");
+        } else {
+          alert(`Error: ${error.response.data.message || 'An unknown error occurred.'}`);
+        }
+      } else if (error.request) {
+        alert('No response from server.');
+      } else {
+        alert(`Error: ${error.message}`);
+      }
+    }
+  };
+
   return (
     <div>
       <EditorComponent
@@ -98,10 +142,11 @@ const ReactDraftEditor = ({ rawContent, selectedTemplate, setSelectedTemplate })
             onClick={() => handleDownloadPDF(targetRef, filename, Resolution, Margin, generatePDF)} 
             text="Download PDF"
           />
-          {/* <ButtonComponent
-            onClick={() => handleLoadTemplate()} 
-            text="Load Template"
-          /> */}
+          {/* Add functionality to block this button if user is unauthorized */}
+          <ButtonComponent
+            onClick={saveFileContentToS3}
+            text="Save template to S3"
+          />
         </ButtonGroup>
         <InputFileName
           filename={filename}
@@ -113,7 +158,6 @@ const ReactDraftEditor = ({ rawContent, selectedTemplate, setSelectedTemplate })
         convertedContentToHTML={convertedContentToHTML}
         targetRef={targetRef}
       />
-      {/* <Footer></Footer> */}
     </div>
   );
 };
