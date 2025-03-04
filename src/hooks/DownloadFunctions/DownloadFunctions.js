@@ -23,13 +23,15 @@ export const handleDownloadPDF = (
   filename,
   Resolution,
   Margin,
-  generatePDF
+  generatePDF,
+  method = 'save'
 ) => {
   const filenameWithExtension = filename.endsWith(".pdf")
     ? filename
     : filename + ".pdf";
+
   const options = {
-    method: "save", // `open` - preview of PDF
+    method, // `open` - preview of PDF
     resolution: Resolution = 2, // could be LOW/MEDIUM/HIGH 
     page: {
       margin: Margin.MEDIUM, // can be setted in px/pt too
