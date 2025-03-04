@@ -1,18 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  EditorState,
   convertToRaw,
-  convertFromRaw,
 } from "draft-js";
-import draftToHtml from "draftjs-to-html";
-import DOMPurify from "dompurify";
 import generatePDF, { Resolution, Margin } from "react-to-pdf";
 
 import ButtonComponent from "../Button/Button";
 import InputFileName from "../Input/InputFileName";
 import ButtonGroup from "../ButtonGroup/ButtonGroup";
 import EditorComponent from "./EditorComponent/EditorComponent";
-import PreviewComponent from "../PreviewComponent/PreviewComponent";
 import {
   handleDownloadContentAsJS,
   handleDownloadPDF,
@@ -23,61 +18,31 @@ import axios from 'axios'; // Add axios for API requests
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./Editor.css";
 
-const ReactDraftEditor = ({ rawContent, selectedTemplate, setSelectedTemplate }) => {
-  const [editorState, setEditorState] = useState(() => {
-    if (selectedTemplate) {
-      // If template is selected, load it into the editor state
-      return EditorState.createWithContent(convertFromRaw(selectedTemplate));
-    } else {
-      // Otherwise, fall back to the rawContent.js file
-      return EditorState.createWithContent(convertFromRaw(JSON.parse(rawContent)));
-    }
-  });
+const ReactDraftEditor = ({ rawContent, selectedTemplate, setSelectedTemplate, editorState, setEditorState }) => {
+  const targetRef = useRef();
 
-  const [convertedContentToHTML, setConvertedContentToHTML] = useState("");
   const [filename, setFilename] = useState("");
 
+  // Save the current editorState (JSON) to localStorage whenever it changes
   useEffect(() => {
-    // proceed when state is not null
-    if (editorState) {
-      // Convert editorState into HTML in order to print data on page
-      let html = draftToHtml(convertToRaw(editorState.getCurrentContent()));
-      html = sanitizeHtml(html);
-
-      let styledHtml = html;
-      styledHtml = html.replace(
-        /<p>/g,
-        '<p style="overflow-wrap: break-word; white-space: pre-wrap;">'
-      );
-
-      setConvertedContentToHTML(styledHtml);
-    }
-  }, [editorState]);
-
-  useEffect(() => {
-    // Save the current editorState (JSON) to localStorage whenever it changes
     const content = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
     localStorage.setItem('selectedTemplate', content);
   }, [editorState]);
 
-  const targetRef = useRef();
-
-  const sanitizeHtml = (html) => {
-    return DOMPurify.sanitize(html);
-  };
-
+  // Compare the current editor state with the new state
   const handleEditorStateChange = (newState) => {
-    // Compare the current editor state with the new state
     if (editorState !== newState) {
       setEditorState(newState);
     }
   };
 
+  // Function to handle filename change
   const handleFilenameChange = (newFilename) => {
     setFilename(newFilename);
   };
 
-  // Function to save file content to S3 via backend
+  // Function to save file content to S3 via backend (API request)
+  // We should move it out from this component somewhere else
   const saveFileContentToS3 = async () => {
     const content = convertToRaw(editorState.getCurrentContent());
     const token = localStorage.getItem("token");
@@ -99,6 +64,7 @@ const ReactDraftEditor = ({ rawContent, selectedTemplate, setSelectedTemplate })
         }
       );
       console.log('File saved successfully', response.data);
+    // This is really bad error handling, we should improve it
     } catch (error) {
       console.error('Error saving file to S3:', error);
       if (error.response) {
@@ -148,16 +114,12 @@ const ReactDraftEditor = ({ rawContent, selectedTemplate, setSelectedTemplate })
             text="Save template to S3"
           />
         </ButtonGroup>
+        {/* We should move input field from here to top level in App.js */}
         <InputFileName
           filename={filename}
           onFilenameChange={handleFilenameChange}
         />
       </Box>
-      <h3>Expected PDF File</h3>
-      <PreviewComponent
-        convertedContentToHTML={convertedContentToHTML}
-        targetRef={targetRef}
-      />
     </div>
   );
 };
