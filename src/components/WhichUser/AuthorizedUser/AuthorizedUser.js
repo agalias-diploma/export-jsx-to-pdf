@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import useS3Files from '../../../hooks/useS3Files';
+import useS3Files from '../../../hooks/useS3/useS3Files';
 import ButtonComponent from '../../Button/Button';
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Collapse, CircularProgress } from '@mui/material';
 import './AuthorizedUser.css';
@@ -14,17 +14,17 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
   // Polling interval (30 seconds)
   const pollInterval = 30000;
 
-  const checkForNewFiles = async () => {
-    try {
-      const response = await fetch(`http://localhost:3000/api/s3-check-for-new-files?userId=${user.id}`);
-      const data = await response.json();
-      if (data.hasNewFiles) {
-        setFetchedFiles(await fetchFiles()); // Fetch and update files if new ones are available
-      }
-    } catch (error) {
-      console.error('Error checking for new files:', error);
-    }
-  };
+  // const checkForNewFiles = async () => {
+  //   try {
+  //     const response = await fetch(`http://localhost:3000/api/s3-check-for-new-files?userId=${user.id}`);
+  //     const data = await response.json();
+  //     if (data.hasNewFiles) {
+  //       setFetchedFiles(await fetchFiles()); // Fetch and update files if new ones are available
+  //     }
+  //   } catch (error) {
+  //     console.error('Error checking for new files:', error);
+  //   }
+  // };
 
   const handleSelectTemplate = async (templateKey) => {
     try {
@@ -79,14 +79,16 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
     }
   };
 
+  // we should get rid of this logic and trigger call on route get /api/s3-files
+
   // Polling files check every 30 seconds
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      checkForNewFiles();
-    }, pollInterval);
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     checkForNewFiles();
+  //   }, pollInterval);
     
-    return () => clearInterval(intervalId);
-  }, [user.id]);
+  //   return () => clearInterval(intervalId);
+  // }, [user.id]);
 
   // Function to handle fetching files
   const handleFetchFiles = async () => {
@@ -119,7 +121,7 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
         >
           Sign Out
         </Button>
-        {/* Add functionality to block this button when user unathorized */}
+        {/* Add functionality to block this button when user unathorized. We should probably move out this too. */}
         <ButtonComponent text="Show my S3 files" onClick={handleFetchFiles} />
 
         {loading && <CircularProgress size={24} style={{ marginLeft: '10px' }} />}

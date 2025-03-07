@@ -1,6 +1,4 @@
 // hooks/useS3Files.js
-import { useState } from 'react';
-
 const useS3Files = (token) => {
   const fetchFiles = async () => {
     try {
