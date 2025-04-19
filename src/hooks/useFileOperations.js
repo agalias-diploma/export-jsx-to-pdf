@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { convertToRaw } from 'draft-js';
 import axios from 'axios';
 
+import config from '../config'; 
+
 const useFileOperations = () => {
   const [filename, setFilename] = useState("");
 
@@ -20,7 +22,9 @@ const useFileOperations = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/s3-save-template",
+        //'https://api-stage.agalias-project.online/api/s3-save-template',
+        `${config.apiUrl}/api/s3-save-template`,
+        // "http://13.61.142.134:3000/api/s3-save-template",
         { filename, content },
         { headers: { Authorization: token } }
       );

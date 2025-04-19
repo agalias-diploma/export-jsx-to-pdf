@@ -1,8 +1,10 @@
-// hooks/useS3Files.js
+import config from '../../config';
+
 const useS3Files = (token) => {
   const fetchFiles = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/s3-files', {
+        const response = await fetch(`${config.apiUrl}/api/s3-files`, {
+        //const response = await fetch(`https://api-stage.agalias-project.online/api/s3-files`, {
         method: 'GET',
         headers: { Authorization: token },
       });

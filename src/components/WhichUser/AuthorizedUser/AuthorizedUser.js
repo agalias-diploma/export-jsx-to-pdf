@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import useS3Files from '../../../hooks/useS3/useS3Files';
 import ButtonComponent from '../../Button/Button';
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Collapse, CircularProgress } from '@mui/material';
 import './AuthorizedUser.css';
+
+import config from '../../../config';
 
 const LoggedInUser = ({ user, token, handleLogout }) => {
   const { fetchFiles } = useS3Files(token);
@@ -28,7 +30,8 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
 
   const handleSelectTemplate = async (templateKey) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/s3-file-content?fileKey=${templateKey}`, {
+        const response = await fetch(`${config.apiUrl}/api/s3-file-content?fileKey=${templateKey}`, {
+        //const response = await fetch(`https://api-stage.agalias-project.online/api/s3-file-content?fileKey=${templateKey}`, {
         method: 'GET',
         headers: { Authorization: token },
       });
@@ -62,7 +65,8 @@ const LoggedInUser = ({ user, token, handleLogout }) => {
 
   const handleDeleteFile = async (fileKey) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/s3-delete-file?fileKey=${fileKey}`, {
+        const response = await fetch(`${config.apiUrl}/api/s3-delete-file?fileKey=${fileKey}`, {
+        //const response = await fetch(`https://api-stage.agalias-project.online/api/s3-delete-file?fileKey=${fileKey}`, {
         method: 'DELETE',
         headers: { Authorization: token },
       });

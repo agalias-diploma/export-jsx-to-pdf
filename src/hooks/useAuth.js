@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
+import config from '../config';
+
 const useAuth = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
@@ -45,7 +47,9 @@ const useAuth = () => {
   }, []);
 
   const handleLogin = () => {
-    window.location.href = 'http://localhost:3000/auth';
+    // window.location.href = 'http://13.61.142.134:3000/auth';
+    window.location.href = `${config.apiUrl}/auth`;
+    //window.location.href = 'https://api-stage.agalias-project.online/auth';
   };
 
   const handleLogout = () => {
