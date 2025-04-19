@@ -21,29 +21,46 @@ sudo apt update || {
     exit 1
 }
 
-echo -e "${YELLOW}Adding Node.js repository...${NC}"
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - || {
-    echo -e "${RED}Failed to add Node.js repository${NC}"
-    exit 1
-}
+# echo -e "${YELLOW}Adding Node.js repository...${NC}"
+# curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - || {
+#     echo -e "${RED}Failed to add Node.js repository${NC}"
+#     exit 1
+# }
 
-echo -e "${YELLOW}Installing Node.js, Nginx and AWS CLI${NC}"
-sudo apt-get install -y nodejs nginx awscli || {
+# echo -e "${YELLOW}Installing Node.js, Nginx and AWS CLI${NC}"
+# sudo apt-get install -y nodejs nginx awscli || {
+#     echo -e "${RED}Failed to install Node.js and Nginx${NC}"
+#     exit 1
+# }
+
+echo -e "${YELLOW}Installing Nginx and AWS CLI${NC}"
+sudo apt-get install -y nginx awscli || {
     echo -e "${RED}Failed to install Node.js and Nginx${NC}"
     exit 1
 }
 
-echo -e "${YELLOW}Installing dependencies...${NC}"
-npm install || {
-    echo -e "${RED}Failed to install npm dependencies${NC}"
+# echo -e "${YELLOW}Installing dependencies...${NC}"
+# npm install || {
+#     echo -e "${RED}Failed to install npm dependencies${NC}"
+#     exit 1
+# }
+
+# npm run build || {
+#     echo -e "${RED}Frontend build failed${NC}"
+#     exit 1
+# }
+
+echo -e "${YELLOW}Pulling the react app build from AWS S3 bucket...${NC}"
+aws s3 sync s3://agalias-react-build-files/build /home/ubuntu/frontend/build --region eu-north-1 || {
+    echo -e "${RED}Failed to sync build files from S3${NC}"
     exit 1
 }
 
-echo -e "${YELLOW}Building the frontend...${NC}"
-npm run build || {
-    echo -e "${RED}Frontend build failed${NC}"
+echo -e "${YELLOW}Verify the index.html file exists...${NC}"
+if [ ! -f "/home/ubuntu/frontend/build/index.html" ]; then
+    echo -e "${RED}Build files not synced properly - index.html not found${NC}"
     exit 1
-}
+fi
 
 echo -e "${YELLOW}Creating directories if they don't exist...${NC}"
 sudo mkdir -p /etc/nginx/sites-available
