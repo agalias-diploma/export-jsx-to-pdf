@@ -1,0 +1,31 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: frontend-dev
+    ports:
+      - "4000:4000"
+    networks:
+      - devnet
+    volumes:
+      - .:/app      # Enables live reload
+      - /app/node_modules  # Prevent container from overwriting node_modules
+    env_file:
+      - .env.dev
+  
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile.dev
+    container_name: backend-dev
+    ports:
+      - "3000:3000"
+    networks:
+      - devnet
+    env_file:
+      - ../backend/.env.dev
+
+networks:
+  devnet:
+    driver: bridge

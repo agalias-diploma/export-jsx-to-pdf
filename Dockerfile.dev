@@ -1,0 +1,15 @@
+# --- Stage 1: React Build ---
+FROM node:20-slim AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+# Use the provided .env.dev during build
+COPY .env.dev .env
+
+# Build the React app
+CMD ["npm", "start"]
