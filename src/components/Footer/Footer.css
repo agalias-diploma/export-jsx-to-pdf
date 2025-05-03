@@ -1,0 +1,71 @@
+.footer {
+    padding: 16px;
+    margin-top: auto;
+    background-color: #f5f5f5;
+    border-top: 1px solid #e0e0e0;
+    text-align: center;
+  }
+  
+  .footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.footer-content {
+    flex: 1;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.footer-logo-left, .footer-logo-right {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    width: 50px;
+}
+
+/* Different sizes for each logo */
+.footer-logo-left img {
+    height: 50px;
+    width: 50px;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+
+.footer-logo-right img {
+    width: 40px; /* Original size for GitHub logo */
+    height: 40px;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+
+.footer-logo:hover {
+    transform: scale(1.1);
+}
+
+.footer-subtitle {
+    margin-top: 4px;
+    color: #757575;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .footer-logo-left {
+        order: 1;
+    }
+    
+    .footer-content {
+        order: 2;
+    }
+    
+    .footer-logo-right {
+        order: 3;
+    }
+}

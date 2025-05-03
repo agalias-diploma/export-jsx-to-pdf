@@ -1,28 +1,59 @@
 import React from "react";
+import Button from '@mui/material/Button';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
 import "../../App.css";
 
-import { createTheme } from '@mui/material/styles';
-// import { ThemeProvider } from "@mui/material/styles";
-import Button from '@mui/material/Button';
+// Create a theme with custom colors
+const theme = createTheme({
+  palette: {
+    orange: {
+      main: '#E65100', // Darker orange for Amazon
+      dark: '#BF360C', // Even darker for hover
+      contrastText: '#fff',
+    },
+    purple: {
+      main: '#4A148C', // Dark purple for JS
+      dark: '#311B92', // Darker purple for hover
+      contrastText: '#fff',
+    },
+    cyan: {
+      main: '#11addb',
+      contrastText: '#fff',
+    }
+  }
+});
 
-
-// // Need to play with custom colors later
-// const theme = createTheme({
-//   palette: {
-//     aws: {
-//       main: '#f57c00',
-//       contrastText: '#FFFFFF',
-//     }
-//   },
-// });
-
-const ButtonComponent = ({ onClick, children, text }) => {
-  return (
-    <Button variant="contained" onClick={onClick}>
-      {text || children}
+const ButtonComponent = ({ onClick, text, color = 'primary', sx = {} }) => (
+  <ThemeProvider theme={theme}>
+    <Button 
+      variant="contained" 
+      onClick={onClick} 
+      color={color}
+      sx={{
+        fontWeight: 'bold',
+        padding: '8px 16px',
+        ...(color === 'orange' && {
+          bgcolor: 'orange.main',
+          color: 'orange.contrastText',
+          '&:hover': {
+            bgcolor: 'orange.dark',
+          },
+        }),
+        ...(color === 'purple' && {
+          bgcolor: 'purple.main',
+          color: 'purple.contrastText',
+          '&:hover': {
+            bgcolor: 'purple.dark',
+          },
+        }),
+        ...sx,
+      }}
+    >
+      {text}
     </Button>
-  );
-};
+  </ThemeProvider>
+);
 
 // const ButtonComponentCustomColors = ({ onClick, children, text, color }) => {
 //   return (

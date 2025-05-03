@@ -9,3 +9,20 @@ h3 {
   text-align: center;
   margin-top: 20%;
 }
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Add some margin to the bottom of the preview component */
+.preview-component {
+  margin-bottom: 30px;
+}

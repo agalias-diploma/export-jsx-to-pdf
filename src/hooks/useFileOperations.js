@@ -6,9 +6,26 @@ import config from '../config';
 
 const useFileOperations = () => {
   const [filename, setFilename] = useState("");
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+    type: "success"
+  });
 
   const handleFilenameChange = (newFilename) => {
     setFilename(newFilename);
+  };
+
+  const showToast = (message, type = "success") => {
+    setToast({
+      show: true,
+      message,
+      type
+    });
+  };
+
+  const hideToast = () => {
+    setToast(prev => ({ ...prev, show: false }));
   };
 
   const saveFileContentToS3 = async (editorState) => {
@@ -16,21 +33,32 @@ const useFileOperations = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      alert("User is not authenticated");
-      return;
+      showToast("User is not authenticated", "error");
+    }
+
+    if (!filename || filename.trim() === "") {
+      showToast("Please enter a filename!", "error");
     }
 
     try {
       const response = await axios.post(
-        //'https://api-stage.agalias-project.online/api/s3-save-template',
         `${config.apiUrl}/api/s3-save-template`,
-        // "http://13.61.142.134:3000/api/s3-save-template",
         { filename, content },
         { headers: { Authorization: token } }
       );
+      
       console.log("File saved successfully", response.data);
+      showToast("File saved successfully!", "success");
+      
+      // Call the global refresh function if it exists
+      if (window.refreshFilesData) {
+        window.refreshFilesData();
+      }
+      
+      return true;
     } catch (error) {
       handleSaveError(error);
+      return false;
     }
   };
 
@@ -42,15 +70,15 @@ const useFileOperations = () => {
         409: "File already exists. Please enter a different filename",
         500: "Server error. Please try again later."
       };
-      alert(errorMessages[status] || `Error: ${error.response.data.message || "An unknown error occurred."}`);
+      showToast(errorMessages[status] || `Error: ${error.response.data.message || "An unknown error occurred."}`, "error");
     } else if (error.request) {
-      alert("No response from server.");
+      showToast("No response from server.", "error");
     } else {
-      alert(`Error: ${error.message}`);
+      showToast(`Error: ${error.message}`, "error");
     }
   };
 
-  return { filename, handleFilenameChange, saveFileContentToS3 };
+  return { filename, handleFilenameChange, saveFileContentToS3, toast, hideToast };
 };
 
 export default useFileOperations;

@@ -10,12 +10,13 @@ import useFileOperations from "./hooks/useFileOperations";
 
 import Editor from "./components/Editor/Editor";
 import Header from "./components/Header/Header";
+import Footer from './components/Footer/Footer';
 import PreviewComponent from "./components/PreviewComponent/PreviewComponent";
 import InputFileName from "./components/Input/InputFileName";
 import ActionButtons from "./components/ButtonGroup/ActionButtons";
 import AuthorizedUser from "./components/WhichUser/AuthorizedUser/AuthorizedUser";
-import UnauthorizedUser from "./components/WhichUser/UnauthorizedUser/UnauthorizedUser";
 import LoadingScreen from "./components/LoadingScreen/LoadingScreen";
+import Toast from './components/Toast/Toast';
 import rawContent from "./data/rawContent";
 
 import generatePDF, { Resolution, Margin } from "react-to-pdf";
@@ -28,7 +29,7 @@ const App = () => {
   const { isLoggedIn, user, token, loading, handleLogin, handleLogout } =
     useAuth();
   const targetRef = useRef();
-  const { filename, handleFilenameChange, saveFileContentToS3 } = useFileOperations();
+  const { filename, handleFilenameChange, saveFileContentToS3, toast, hideToast } = useFileOperations();
 
   const [selectedTemplate, setSelectedTemplate] = useState(() => {
     const savedTemplate = localStorage.getItem("selectedTemplate");
@@ -49,13 +50,12 @@ const App = () => {
   const { convertedContentToHTML } = usePreviewComponent(editorState);
 
   useEffect(() => {
-    if (selectedTemplate) {
-      // If a template is selected, save it to localStorage
-      localStorage.setItem(
-        "selectedTemplate",
-        JSON.stringify(selectedTemplate)
-      );
-    }
+  if (selectedTemplate) {
+    // When selectedTemplate changes, update the editorState
+    setEditorState(EditorState.createWithContent(
+      convertFromRaw(selectedTemplate)
+    ));
+  }
   }, [selectedTemplate]);
 
   if (loading) {
@@ -64,10 +64,20 @@ const App = () => {
 
   return (
     <div className="App">
-      <Header />
+      <Toast
+        show={toast.show}
+        message={toast.message}
+        type={toast.type}
+        onClose={hideToast}
+        onHide={hideToast}
+      />
+      <Header 
+        isLoggedIn={isLoggedIn}
+        handleLogin={handleLogin}
+        handleLogout={handleLogout}
+      />
       {!isLoggedIn ? (
         <>
-          <UnauthorizedUser handleLogin={handleLogin} />
           <Editor
             rawContent={rawContent}
             editorState={editorState}
@@ -149,6 +159,7 @@ const App = () => {
           />
         </>
       )}
+      <Footer />
     </div>
   );
 };

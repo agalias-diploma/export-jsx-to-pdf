@@ -1,23 +1,38 @@
-import Card from '@mui/material/Card';
-import { CardHeader } from '@mui/material';
+import React from 'react';
+import ButtonComponent from '../Button/Button';
 import './Header.css';
 
-const Header = () => {
-    return (
-        <header className="app-header">
-            <h1>Export formatted text to PDF</h1>
-        </header>
-    )
-}
-
-// const Header = () => {
-//     return (
-//         <Card sx={{ minHeight: 80 }}>
-//             <CardHeader className="app-header">
-//                 <h1>Export formatted text to PDF</h1>
-//             </CardHeader>
-//         </Card>
-//     )
-// }
+const Header = ({ isLoggedIn, user, handleLogin, handleLogout }) => {
+  return (
+    <header className="app-header">
+      <div className="header-title">
+        Export formatted text to PDF
+      </div>
+      
+      <div className="auth-section">
+        {isLoggedIn ? (
+          <div className="user-info">
+            {user?.name && (
+              <span className="user-greeting">
+                Hello, {user.name}
+              </span>
+            )}
+            <ButtonComponent 
+              text="Sign Out"
+              color="error"
+              onClick={handleLogout}
+            />
+          </div>
+        ) : (
+          <ButtonComponent 
+            text="Sign In with Google"
+            color="success"
+            onClick={handleLogin}
+          />
+        )}
+      </div>
+    </header>
+  );
+};
 
 export default Header;
