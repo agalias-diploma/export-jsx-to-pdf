@@ -69,3 +69,22 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
 
+### Loadtest
+
+Before running loadtest, you need to grab some valid token and save it in `.env` file.
+
+To run loadtest locally run:
+
+```bash
+export $(cat .env | xargs) && k6 run loadtest.js --env BEARER_TOKEN_TEST_LOAD=$BEARER_TOKEN_TEST_LOAD
+```
+
+Or Grafana Cloud to generate report (dashboards):
+
+```bash
+# In UI, for specific K6 project find token and login in console
+k6 cloud login --token <TOKEN>
+
+# run
+export $(cat .env | xargs) && k6 cloud loadtest.js --env BEARER_TOKEN_TEST_LOAD=$BEARER_TOKEN_TEST_LOAD
+```
