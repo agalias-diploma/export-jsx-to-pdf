@@ -6,9 +6,25 @@ import './AuthorizedUser.css';
 
 import config from '../../../config';
 
+const CACHE_TTL = 2 * 60 * 1000; // 2 minutes
+
 const LoggedInUser = ({ user, token, handleLogout, setSelectedTemplate }) => {
   const { fetchFiles } = useS3Files(token);
-  const [fetchedFiles, setFetchedFiles] = useState([]); // Local state to store files
+  const [fetchedFiles, setFetchedFiles] = useState(() => {
+    try {
+      const cachedData = sessionStorage.getItem('cachedFiles');
+      if (cachedData) {
+        const { files, timestamp } = JSON.parse(cachedData);
+        // If cache is still valid, use it
+        if (Date.now() - timestamp < CACHE_TTL) {
+          return files;
+        }
+      }
+    } catch (e) {
+      console.error("Error reading from sessionStorage:", e);
+    }
+    return [];
+  });
   const [showFiles, setShowFiles] = useState(() => {
     try {
       // Use sessionStorage which is simpler and persists only for the current session
@@ -19,8 +35,19 @@ const LoggedInUser = ({ user, token, handleLogout, setSelectedTemplate }) => {
       return false;
     }
   });
-  const [loading, setLoading] = useState(false); // State for tracking if files are being loaded
-  const [lastFetched, setLastFetched] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [lastFetched, setLastFetched] = useState(() => {
+    try {
+      const cachedData = sessionStorage.getItem('cachedFiles');
+      if (cachedData) {
+        const { timestamp } = JSON.parse(cachedData);
+        return timestamp;
+      }
+    } catch (e) {
+      console.error("Error reading timestamp:", e);
+    }
+    return 0;
+  });
 
   // Save state to sessionStorage after any changes to showFiles
   useEffect(() => {
@@ -30,6 +57,21 @@ const LoggedInUser = ({ user, token, handleLogout, setSelectedTemplate }) => {
       console.error("Error writing to sessionStorage:", e);
     }
   }, [showFiles]);
+
+  // Cache the fetched files
+  useEffect(() => {
+    if (fetchedFiles.length > 0) {
+      try {
+        const cacheData = {
+          files: fetchedFiles,
+          timestamp: lastFetched
+        };
+        sessionStorage.setItem('cachedFiles', JSON.stringify(cacheData));
+      } catch (e) {
+        console.error("Error caching files:", e);
+      }
+    }
+  }, [fetchedFiles, lastFetched]);
 
   const handleSelectTemplate = async (templateKey) => {
     setLoading(true);
@@ -91,7 +133,12 @@ const LoggedInUser = ({ user, token, handleLogout, setSelectedTemplate }) => {
   };
 
     // Function to only fetch files without toggling visibility
-    const fetchFilesData = async () => {
+    const fetchFilesData = async (forceRefresh = false) => {
+      // If we have recent data and we're not forcing a refresh, skip the fetch
+      if (!forceRefresh && fetchedFiles.length > 0 && (Date.now() - lastFetched < CACHE_TTL)) {
+        return;
+      }
+      
       setLoading(true);
       try {
         const fetchedData = await fetchFiles();
@@ -105,22 +152,24 @@ const LoggedInUser = ({ user, token, handleLogout, setSelectedTemplate }) => {
     };
   
     useEffect(() => {
-      if (showFiles && (fetchedFiles.length === 0)) {
+      if (showFiles && (fetchedFiles.length === 0 || Date.now() - lastFetched > CACHE_TTL)) {
         fetchFilesData();
       }
     }, []);
 
-  const handleFetchFiles = async () => {
-    // Fetch only if we need to
-    if (fetchedFiles.length === 0) {
-      await fetchFilesData();
-    }
-    setShowFiles(prev => !prev);
-  };
+    const handleFetchFiles = async () => {
+      // Toggle visibility regardless of whether we need to fetch
+      setShowFiles(prev => !prev);
+      
+      // Only fetch if needed (empty or stale cache)
+      if (fetchedFiles.length === 0 || Date.now() - lastFetched > CACHE_TTL) {
+        await fetchFilesData();
+      }
+    };
 
     // Function that can be called externally to refresh files (e.g., after saving)
     const refreshFiles = async () => {
-      await fetchFilesData();
+      await fetchFilesData(true);
     };
   
     // Expose the refresh function
@@ -187,11 +236,6 @@ const LoggedInUser = ({ user, token, handleLogout, setSelectedTemplate }) => {
           </TableContainer>
         )}
       </Collapse>
-      {/* <Collapse in={showFiles} timeout="auto" unmountOnExit>
-        <div style={{ marginTop: '15px', fontSize: '12px', color: 'gray', textAlign: 'right' }}>
-          Note: This data might not be up-to-date.
-        </div>
-      </Collapse> */}
     </div>
   );
 };

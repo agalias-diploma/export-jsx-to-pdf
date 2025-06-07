@@ -3,7 +3,7 @@ import { check, sleep } from "k6";
 
 export let options = {
   vus: 1000,
-  duration: "30s",
+  duration: "1m",
 };
 
 const BASE_URL = "https://stage.agalias-project.online";
@@ -16,7 +16,7 @@ function executeScenario() {
     "main page status is 200": (r) => r.status === 200,
   });
 
-  // 2. Authorized requiest on /s3-files
+  // Authorized requiest on /s3-files
   let resAuth = http.get(`${BASE_URL}/s3-files`, {
     headers: {
       Authorization: TOKEN,
